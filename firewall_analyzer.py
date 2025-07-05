@@ -4,6 +4,8 @@ import time
 from datetime import datetime
 from colorama import Fore
 
+
+hh = {"User-Agent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/37.0.2062.94 Chrome/37.0.2062.94 Safari/537.36"}
 report = """<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -34,7 +36,7 @@ def time_blocked(url, domain):
     time_started = datetime.now()
     time_started = time_started.strftime("%H:%M:%S")
     while True:
-        if requests.get(url).status_code != 403:
+        if requests.get(url, headers=hh).status_code != 403:
             print(Fore.GREEN + 'UNBLOCKED!' + Fore.RESET)
             time_finished = datetime.now()
             time_finished = time_finished.strftime("%H:%M:%S")
@@ -51,7 +53,7 @@ def generate_wordlist(domain):
         else:
             open(f'.{domain}/wordlist', 'a').write('\n' + 'INFOINFOINFOINFOINFOINFOINFOINFO')
             i=i-1
-        
+
 def tryratelimit(url, domain):
     print(f'{Fore.GREEN}[+]{Fore.YELLOW} Trying Rate limit...{Fore.RESET}')
     try:
@@ -65,7 +67,7 @@ def tryratelimit(url, domain):
         if index > control:
             return 'NO RATE LIMIT!'
         os.system(f'sudo ffuf -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/37.0.2062.94 Chrome/37.0.2062.94 Safari/537.36" -s -rate {index} -u {url}/FUZZ -w .{domain}/wordlist > .{domain}/fuzz')
-        if requests.get(url).status_code == 403:
+        if requests.get(url, headers=hh).status_code == 403:
             return str(index)
         else:
             index+=1
@@ -93,7 +95,7 @@ try:
 except:
     print(f'{Fore.RED}[-]{Fore.YELLOW} ERROR creating .{domain} {Fore.RESET}')
 try:
-    req = requests.get(url)
+    req = requests.get(url, headers=hh)
     print(f'{Fore.GREEN}[+]{Fore.YELLOW} CONNECTION VERIFIED! Verifing status code')
     original_status_code = req.status_code
     print(Fore.CYAN, original_status_code, Fore.RESET)
